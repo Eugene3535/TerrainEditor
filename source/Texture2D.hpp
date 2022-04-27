@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include <string>
-#include <optional>
 
 class Texture2D
 {
@@ -22,5 +21,3 @@ private:
     GLuint     m_handle;
     glm::uvec2 m_size;
 };
-
-std::optional<Texture2D> GetTexture(const std::string& filename);

@@ -100,23 +100,3 @@ const glm::uvec2& Texture2D::getSize() const
 {
     return m_size;
 }
-
-std::optional<Texture2D> GetTexture(const std::string& filename)
-{
-    static std::map<std::string, Texture2D> textures;
-
-    if (auto found = textures.find(filename); found != textures.end())
-        return found->second;
-    else
-    {
-        Texture2D texture;
-        texture.loadFromFile("Textures/" + std::string(filename));
-
-        const auto [it, success] = textures.insert({ filename, texture });
-
-        if (success)
-            return it->second;
-    }
-         
-    return std::nullopt;
-}

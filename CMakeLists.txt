@@ -4,20 +4,20 @@ set(PROJECT_NAME TerrainEditor)
 project(${PROJECT_NAME})
 
 set(HEADERS
+	source/AssetManager.hpp
 	source/ShaderProgram.hpp
 	source/stb_image.h
 	source/Texture2D.hpp
 )
 
 set(SOURCES
+	source/AssetManager.hpp
 	source/main.cpp
 	source/ShaderProgram.cpp
 	source/Texture2D.cpp
 )
 
-add_executable(${PROJECT_NAME}
-	${SOURCES}
-)
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
