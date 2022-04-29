@@ -7,6 +7,7 @@
 ShaderProgram::ShaderProgram():
 	m_handle(0)
 {
+	m_handle = glCreateProgram();
 }
 
 ShaderProgram::~ShaderProgram()
@@ -17,8 +18,6 @@ ShaderProgram::~ShaderProgram()
 
 bool ShaderProgram::loadFromFile(const std::string& filepath, GLenum type)
 {
-	m_handle = glCreateProgram();
-
 	std::string source;
 	std::ifstream ifs_stream;
 

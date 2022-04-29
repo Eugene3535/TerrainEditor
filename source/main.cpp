@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "ShaderProgram.hpp"
+#include "Texture2D.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -36,16 +37,18 @@ int main()
         return -1;
     }    
 
-    float vertices[] 
+    float vertices[] = 
     {
-         0.0f,  0.5f, 0.0f,  
-         0.5f, -0.5f, 0.0f,  
-        -0.5f, -0.5f, 0.0f 
+         0,  0, 0,   0, 0,
+         1,  0, 0,   1, 0,
+         1,  1, 0,   1, 1, 
+         0,  1, 0,   0, 1
     };
 
     unsigned int indices[] 
     {  
-        0, 1, 3
+        0, 1, 3,
+        1, 2, 3
     };
 
     unsigned int VBO, VAO, EBO;
@@ -58,30 +61,33 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+   
     glBindVertexArray(0);
 
     ShaderProgram shader;
     bool a = shader.loadFromFile("resources/shaders/shader.vert", GL_VERTEX_SHADER);
     bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
-    if (!a || !b)
+    Texture2D grass;
+    bool c = grass.loadFromFile("resources/textures/grass.jpg");
+
+    if (!a || !b || !c)
     {
         std::cerr << "Wrong filepath!!!!\n";
         return EXIT_FAILURE;
     }
         
-
-
     while (!glfwWindowShouldClose(window))
     {      
         processInput(window);
@@ -92,9 +98,11 @@ int main()
         shader.use();
 
         glBindVertexArray(VAO); 
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0);  
+        grass.bind(true);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        grass.bind(false);
+        glBindVertexArray(0);  
 
         
         glfwSwapBuffers(window);
