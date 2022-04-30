@@ -113,7 +113,7 @@ int main()
     bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
     Texture2D grass;
-    bool c = grass.loadFromFile("resources/textures/grass.jpg");
+    bool c = grass.loadFromFile("resources/textures/map1.png");
 
     if (!a || !b || !c)
     {
@@ -126,9 +126,9 @@ int main()
     camera.init(shader);
     shader.use();
 
-    
-
     glm::mat4 model(1.0f);
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+
     glm::mat4 projection(1);
     projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
 
