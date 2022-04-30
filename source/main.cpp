@@ -5,13 +5,36 @@
 
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
+#include "Camera.hpp"
+
+bool IsKeyPressed(GLFWwindow* window, const int key)
+{
+    return glfwGetKey(window, key) == GLFW_PRESS;
+}
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
+void processInput(GLFWwindow* window);
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// Константы
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 800;
+
+// Камера
+Camera camera;
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+
+bool firstMouse = true;
+
+// Тайминги
+float deltaTime = 0.0f;	// время между текущим кадром и последним кадром
+float lastFrame = 0.0f;
+
 
 int main()
 {
@@ -23,26 +46,36 @@ int main()
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Test window", NULL, NULL);
     if (window == NULL)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
         return -1;
     }
+
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+
+    // Сообщаем GLFW, чтобы он захватил наш курсор
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        std::cerr << "Failed to initialize GLAD\n";
+        glfwTerminate();
         return -1;
     }    
 
+    glEnable(GL_DEPTH_TEST);
+
     float vertices[] = 
     {
-         0,  0, 0,   0, 0,
-         1,  0, 0,   1, 0,
-         1,  1, 0,   1, 1, 
-         0,  1, 0,   0, 1
+         -1, -1, 0,   0, 0,
+          1, -1, 0,   1, 0,
+          1,  1, 0,   1, 1, 
+         -1,  1, 0,   0, 1
     };
 
     unsigned int indices[] 
@@ -87,18 +120,38 @@ int main()
         std::cerr << "Wrong filepath!!!!\n";
         return EXIT_FAILURE;
     }
+
+    shader.addUniform("model");
+    shader.addUniform("projection");
+    camera.init(shader);
+    shader.use();
+
+    
+
+    glm::mat4 model(1.0f);
+    glm::mat4 projection(1);
+    projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
+
+    shader.setUniform("model", glm::value_ptr(model));
+    shader.setUniform("projection", glm::value_ptr(projection));
         
     while (!glfwWindowShouldClose(window))
     {      
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.use();
 
-        glBindVertexArray(VAO); 
-        grass.bind(true);
+        camera.apply(shader);
+
+        glBindVertexArray(VAO);
+        grass.bind(true);       
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         grass.bind(false);
@@ -107,6 +160,8 @@ int main()
         
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        Sleep(16);
     }
 
 
@@ -115,13 +170,55 @@ int main()
 }
 
 
-void processInput(GLFWwindow *window)
+
+
+void processInput(GLFWwindow* window)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    float cameraSpeed = 2.5f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.moveForward(deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.moveBackward(deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.strafeLeft(deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.strafeRight(deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.moveUp(deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        camera.moveDown(deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    camera.mouseViewOrient(xpos, ypos);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS)
+    {
+        if (key == GLFW_KEY_LEFT_ALT)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+            camera.setMouseLook((glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) ? false : true);
+        }
+    }
+
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        std::cout << "boobs";
 }
