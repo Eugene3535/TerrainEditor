@@ -1,0 +1,1 @@
+Next step is implementing a method to assign UV coordinates and calculate normals for lighting and texturing.
