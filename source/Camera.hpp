@@ -62,34 +62,39 @@ public:
 		}
 	}
 
-	void moveForward(float deltaTime)
+	void moveForward(float dt)
 	{
-		cameraPos += speed * cameraFront * deltaTime;
+		cameraPos += speed * cameraFront * dt;
+
+		//cameraPos.y = 3;
 	};
 
-	void moveBackward(float deltaTime)
+	void moveBackward(float dt)
 	{
-		cameraPos -= speed * cameraFront * deltaTime;
+		cameraPos -= speed * cameraFront * dt;
+		//cameraPos.y = 3;
 	};
 
-	void strafeLeft(float deltaTime)
+	void strafeLeft(float dt)
 	{
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed * deltaTime;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed * dt;
+		//cameraPos.y = 3;
 	};
 
-	void strafeRight(float deltaTime)
+	void strafeRight(float dt)
 	{
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed * deltaTime;
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed * dt;
+		//cameraPos.y = 3;
 	};
 
-	void moveUp(float deltaTime)
+	void moveUp(float dt)
 	{
-		cameraPos += glm::vec3(0.f, speed * deltaTime, 0.f);
+		cameraPos += glm::vec3(0.f, speed * dt, 0.f);
 	};
 
-	void moveDown(float deltaTime)
+	void moveDown(float dt)
 	{
-		cameraPos -= glm::vec3(0.f, speed * deltaTime, 0.f);
+		cameraPos -= glm::vec3(0.f, speed * dt, 0.f);
 	};
 
 	void setMouseLook(bool mouselook) 
@@ -106,7 +111,7 @@ private:
 	bool mouselook = false;
 
 	glm::mat4 m_view = glm::mat4(1);
-	glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 4.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 4.0f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 

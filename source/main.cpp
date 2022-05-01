@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <vector>
 
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
@@ -35,7 +36,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// время между текущим кадром и последним кадром
 float lastFrame = 0.0f;
 
-
 int main()
 {
     glfwInit();
@@ -43,7 +43,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Test window", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Terrain editor", NULL, NULL);
     if (window == NULL)
     {
         std::cerr << "Failed to create GLFW window\n";
@@ -70,21 +70,60 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    float vertices[] = 
+    // Cell amount
+    const int cells = 999;
+
+    // Vertex amount as cells + 1
+    const int vert_amount = 1000;
+
+    std::vector<glm::vec3> vertices;
+    vertices.resize(vert_amount * vert_amount, glm::vec3());
+
+    float offsetW = 2.0f / cells;
+    float offsetH = 2.0f / cells;
+
+    int c = 0;
+
+    for (int z = 0; z < vert_amount; z++)
     {
-         -1, -1, 0,   0, 0,
-          1, -1, 0,   1, 0,
-          1,  1, 0,   1, 1, 
-         -1,  1, 0,   0, 1
-    };
+        for (int x = 0; x < vert_amount; x++)
+        {
+            vertices[c].x = -1.0f + x * offsetW;
+            vertices[c].z = 1.0 + z * -offsetH;
+            c++;
+        }
+    }
 
-    unsigned int indices[] 
-    {  
-        0, 1, 3,
-        1, 2, 3
-    };
+    c = 0;
+    std::vector<GLuint> indices;
+    indices.resize(cells * cells * 6);
 
-    unsigned int VBO, VAO, EBO;
+    for (int y = 0; y < cells; y++)
+    {
+        for (int x = 0; x < cells; x++)
+        {
+            indices[c] = y * vert_amount + x;
+            indices[c + 1] = y * vert_amount + x + 1;
+            indices[c + 2] = y * vert_amount + x + vert_amount;
+
+            c += 3;
+        }
+    }
+
+    for (int y = 0; y < cells; y++)
+    {
+        for (int x = 1; x < vert_amount; x++)
+        {
+            indices[c] = y * vert_amount + x;
+            indices[c + 1] = y * vert_amount + x + vert_amount;
+            indices[c + 2] = y * vert_amount + x + vert_amount - 1;
+
+            c += 3;
+        }
+    }
+
+    unsigned int VAO, VBO, EBO;
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -92,18 +131,14 @@ int main()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
    
     glBindVertexArray(0);
@@ -113,13 +148,8 @@ int main()
     bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
     Texture2D grass;
-    bool c = grass.loadFromFile("resources/textures/map1.png");
-
-    if (!a || !b || !c)
-    {
-        std::cerr << "Wrong filepath!!!!\n";
-        return EXIT_FAILURE;
-    }
+    bool d = grass.loadFromFile("resources/textures/map1.png");
+    grass.setRepeated(true);
 
     shader.addUniform("model");
     shader.addUniform("projection");
@@ -127,7 +157,7 @@ int main()
     shader.use();
 
     glm::mat4 model(1.0f);
-    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+    model = glm::scale(model, glm::vec3(30, 30, 30));
 
     glm::mat4 projection(1);
     projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
@@ -153,7 +183,7 @@ int main()
         glBindVertexArray(VAO);
         grass.bind(true);       
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         grass.bind(false);
         glBindVertexArray(0);  
 
