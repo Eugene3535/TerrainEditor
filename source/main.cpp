@@ -57,8 +57,6 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-    // Сообщаем GLFW, чтобы он захватил наш курсор
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -69,77 +67,84 @@ int main()
     }    
 
     glEnable(GL_DEPTH_TEST);
-
-    // Cell amount
-    const int cells = 999;
-
-    // Vertex amount as cells + 1
-    const int vert_amount = 1000;
+ 
+    const std::size_t vertex_amount = 2;
+    const std::size_t cell_amount = vertex_amount - 1;
 
     std::vector<glm::vec3> vertices;
-    vertices.resize(vert_amount * vert_amount, glm::vec3());
-
-    float offsetW = 2.0f / cells;
-    float offsetH = 2.0f / cells;
-
-    int c = 0;
-
-    for (int z = 0; z < vert_amount; z++)
-    {
-        for (int x = 0; x < vert_amount; x++)
-        {
-            vertices[c].x = -1.0f + x * offsetW;
-            vertices[c].z = 1.0 + z * -offsetH;
-            c++;
-        }
-    }
-
-    c = 0;
+    std::vector<glm::vec2> tex_coords;
     std::vector<GLuint> indices;
-    indices.resize(cells * cells * 6);
 
-    for (int y = 0; y < cells; y++)
+    vertices.resize(vertex_amount * vertex_amount, glm::vec3());
+    tex_coords.resize(vertex_amount * vertex_amount, glm::vec2());
+    indices.resize(cell_amount * cell_amount * 6);
+
+    float offsetZ = 2.0f / cell_amount;
+    float offsetX = 2.0f / cell_amount;
+
+    std::size_t index = 0;
+
+    float Z = -1;
+
+    for (size_t z = 0; z < vertex_amount; z++)
     {
-        for (int x = 0; x < cells; x++)
-        {
-            indices[c] = y * vert_amount + x;
-            indices[c + 1] = y * vert_amount + x + 1;
-            indices[c + 2] = y * vert_amount + x + vert_amount;
+        float X = -1;
 
-            c += 3;
+        for (size_t x = 0; x < vertex_amount; x++)
+        {
+            vertices[index].x = X;
+            vertices[index].z = Z;
+
+            tex_coords[index].x = (X + 1) * 0.5f;
+            tex_coords[index].y = (Z + 1) * 0.5f;
+
+            X += offsetX;
+
+            index++;
+        }
+        Z += offsetZ;
+    }
+
+    index = 0;
+
+    for (size_t y = 0; y < cell_amount; y++)
+    {
+        for (size_t x = 0; x < cell_amount; x++)
+        {
+            GLuint pos = y * vertex_amount + x;
+
+            indices[index] = pos;
+            indices[index + 1] = pos + 1;
+            indices[index + 2] = pos + vertex_amount + 1;
+
+            indices[index + 3] = pos + 1;
+            indices[index + 4] = pos + vertex_amount;
+            indices[index + 5] = pos + vertex_amount + 1;
+
+            index += 6;
         }
     }
 
-    for (int y = 0; y < cells; y++)
-    {
-        for (int x = 1; x < vert_amount; x++)
-        {
-            indices[c] = y * vert_amount + x;
-            indices[c + 1] = y * vert_amount + x + vert_amount;
-            indices[c + 2] = y * vert_amount + x + vert_amount - 1;
-
-            c += 3;
-        }
-    }
-
-    unsigned int VAO, VBO, EBO;
+    GLuint VAO, VBO[2], EBO;
 
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(2, VBO);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * tex_coords.size(), tex_coords.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
+    glEnableVertexAttribArray(1);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), GL_STATIC_DRAW);
    
     glBindVertexArray(0);
 
@@ -157,7 +162,8 @@ int main()
     shader.use();
 
     glm::mat4 model(1.0f);
-    model = glm::scale(model, glm::vec3(30, 30, 30));
+    //model = glm::scale(model, glm::vec3(30, 30, 30));
+    //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
 
     glm::mat4 projection(1);
     projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
@@ -183,7 +189,8 @@ int main()
         glBindVertexArray(VAO);
         grass.bind(true);       
 
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLE_FAN, indices.size(), GL_UNSIGNED_INT, 0);
+
         grass.bind(false);
         glBindVertexArray(0);  
 
@@ -198,9 +205,6 @@ int main()
     glfwTerminate();
     return 0;
 }
-
-
-
 
 void processInput(GLFWwindow* window)
 {
@@ -223,8 +227,6 @@ void processInput(GLFWwindow* window)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 

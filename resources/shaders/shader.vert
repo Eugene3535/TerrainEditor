@@ -1,20 +1,17 @@
 #version 460 core
 
-layout (location = 0) in vec3 point;   
+layout (location = 0) in vec3 position;  
+layout (location = 1) in vec2 in_tex_coords;  
   
-out vec4 color; 
+out vec2 tex_coords; 
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-uniform sampler2D texture1;
+uniform mat4 model = mat4(1);
+uniform mat4 view = mat4(1);
+uniform mat4 projection = mat4(1);
 
 void main()
 {
-    color = texture(texture1, vec2(point.x, point.z)); 
-
-    float height = 0.0f + ((color.r + color.g + color.b) / 3.0f) * 0.1f;
-
-    gl_Position = projection * view * model * vec4(point.x, height, point.z, 1.0f);   
+    //float height = 0.0f - ((color.r + color.g + color.b) * 0.3f) * 0.1f;
+    tex_coords = in_tex_coords;
+    gl_Position = projection * view * model * vec4(position, 1.0f);   
 } 
