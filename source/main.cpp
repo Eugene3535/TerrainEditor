@@ -65,6 +65,10 @@ int main()
     }    
 
     glEnable(GL_DEPTH_TEST);
+
+    Texture2D grass;
+    bool d = grass.loadFromFile("resources/textures/field.png");
+    grass.setRepeated(true);
  
     const std::size_t vertex_amount = 100;
     const std::size_t cell_amount = vertex_amount - 1;
@@ -87,15 +91,26 @@ int main()
     for (size_t z = 0; z < vertex_amount; z++)
     {
         float X = -1;
-
+        
         for (size_t x = 0; x < vertex_amount; x++)
         {
             vertices[index].x = X;
-            //vertices[index].y = 0.5f;
+            vertices[index].y = (rand() % 2) * 0.005f;
             vertices[index].z = Z;
 
-            tex_coords[index].x = (X + 1) * 0.5f;
-            tex_coords[index].y = (Z + 1) * 0.5f;
+            // For the textures: I don't know if you want to texture the terrain with one big texture, 
+            // or more textures blended together, for example a simple grass pattern, or grass blended to snow with increasing height.
+            // The first one is pretty easy :  You use one big texture over the whole map. Then the texture coord for one vertex is:
+            // lets say your terrain's width is X and its height is Z.
+            // 
+            // tex_coords[index].x = (X + 1) * 0.5f;
+            // tex_coords[index].y = (Z + 1) * 0.5f;
+
+            // If your texture is a simple grass tile, 
+            // or anything that you want to cover the whole terrain with,
+            // then texture coord of a vertex is:
+            tex_coords[index].x = grass.getSize().x * X;
+            tex_coords[index].y = grass.getSize().y * Z;
 
             X += offsetX;
 
@@ -114,7 +129,7 @@ int main()
 
             indices[index] = pos;
             indices[index + 1] = pos + 1;
-            indices[index + 2] = pos + vertex_amount + 1;
+            indices[index + 2] = pos + vertex_amount;
 
             indices[index + 3] = pos + 1;
             indices[index + 4] = pos + vertex_amount;
@@ -151,17 +166,13 @@ int main()
     bool a = shader.loadFromFile("resources/shaders/shader.vert", GL_VERTEX_SHADER);
     bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
-    Texture2D grass;
-    bool d = grass.loadFromFile("resources/textures/motavia.png");
-    grass.setRepeated(true);
-
     shader.addUniform("model");
     shader.addUniform("projection");
     camera.init(shader);
     shader.use();
 
     glm::mat4 model(1.0f);
-    //model = glm::scale(model, glm::vec3(30, 30, 30));
+    model = glm::scale(model, glm::vec3(10, 10, 10));
     //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
 
     glm::mat4 projection(1);
@@ -188,7 +199,7 @@ int main()
         glBindVertexArray(VAO);
         grass.bind(true);       
 
-        glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
         grass.bind(false);
         glBindVertexArray(0);  
