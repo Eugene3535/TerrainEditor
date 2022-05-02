@@ -8,13 +8,15 @@ set(HEADERS
 	source/ShaderProgram.hpp
 	source/stb_image.h
 	source/Texture2D.hpp
+	source/Camera.hpp
 )
 
 set(SOURCES
-	source/AssetManager.hpp
 	source/main.cpp
+	source/AssetManager.inl	
 	source/ShaderProgram.cpp
 	source/Texture2D.cpp
+	source/Camera.cpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
@@ -37,7 +39,6 @@ target_link_libraries(${PROJECT_NAME} glad)
 add_subdirectory(external/glm)
 target_link_libraries(${PROJECT_NAME} glm)
 
-#set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}../../bin/)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
