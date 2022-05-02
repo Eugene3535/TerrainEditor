@@ -34,6 +34,8 @@ float lastFrame = 0.0f;
 
 int main()
 {
+    srand(time(NULL));
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -64,7 +66,7 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
  
-    const std::size_t vertex_amount = 2;
+    const std::size_t vertex_amount = 100;
     const std::size_t cell_amount = vertex_amount - 1;
 
     std::vector<glm::vec3> vertices;
@@ -89,6 +91,7 @@ int main()
         for (size_t x = 0; x < vertex_amount; x++)
         {
             vertices[index].x = X;
+            //vertices[index].y = 0.5f;
             vertices[index].z = Z;
 
             tex_coords[index].x = (X + 1) * 0.5f;
@@ -149,7 +152,7 @@ int main()
     bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
     Texture2D grass;
-    bool d = grass.loadFromFile("resources/textures/map1.png");
+    bool d = grass.loadFromFile("resources/textures/motavia.png");
     grass.setRepeated(true);
 
     shader.addUniform("model");
@@ -185,7 +188,7 @@ int main()
         glBindVertexArray(VAO);
         grass.bind(true);       
 
-        glDrawElements(GL_TRIANGLE_FAN, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
 
         grass.bind(false);
         glBindVertexArray(0);  
