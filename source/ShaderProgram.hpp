@@ -10,10 +10,6 @@ class ShaderProgram
 {
 public:
 	ShaderProgram();
-	ShaderProgram(const ShaderProgram& other) = delete;
-	ShaderProgram operator = (const ShaderProgram& other) = delete;
-	ShaderProgram(const ShaderProgram&& other) = delete;
-	ShaderProgram operator = (const ShaderProgram&& other) = delete;
 	~ShaderProgram();
 
 	[[nodiscard]]

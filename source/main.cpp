@@ -13,7 +13,6 @@ bool IsKeyPressed(GLFWwindow* window, const int key)
     return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -21,19 +20,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 void processInput(GLFWwindow* window);
 
-// Константы
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 
-// Камера
 Camera camera;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 
 bool firstMouse = true;
 
-// Тайминги
-float deltaTime = 0.0f;	// время между текущим кадром и последним кадром
+float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
@@ -233,7 +229,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    camera.mouseViewOrient(xpos, ypos);
+    camera.setMouseViewOrientation(xpos, ypos);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
