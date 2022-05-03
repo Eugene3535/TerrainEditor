@@ -9,6 +9,7 @@ set(HEADERS
 	source/stb_image.h
 	source/Texture2D.hpp
 	source/Camera.hpp
+	source/Terrain.hpp
 )
 
 set(SOURCES
@@ -17,6 +18,7 @@ set(SOURCES
 	source/ShaderProgram.cpp
 	source/Texture2D.cpp
 	source/Camera.cpp
+	source/Terrain.cpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
