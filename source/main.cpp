@@ -7,6 +7,7 @@
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
 #include "Camera.hpp"
+#include "Terrain.hpp"
 
 bool IsKeyPressed(GLFWwindow* window, const int key)
 {
@@ -70,97 +71,8 @@ int main()
     bool d = grass.loadFromFile("resources/textures/field.png");
     grass.setRepeated(true);
  
-    const std::size_t vertex_amount = 100;
-    const std::size_t cell_amount = vertex_amount - 1;
-
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> tex_coords;
-    std::vector<GLuint> indices;
-
-    vertices.resize(vertex_amount * vertex_amount, glm::vec3());
-    tex_coords.resize(vertex_amount * vertex_amount, glm::vec2());
-    indices.resize(cell_amount * cell_amount * 6);
-
-    float offsetZ = 2.0f / cell_amount;
-    float offsetX = 2.0f / cell_amount;
-
-    std::size_t index = 0;
-
-    float Z = -1;
-
-    for (size_t z = 0; z < vertex_amount; z++)
-    {
-        float X = -1;
-        
-        for (size_t x = 0; x < vertex_amount; x++)
-        {
-            vertices[index].x = X;
-            vertices[index].y = (rand() % 2) * 0.005f;
-            vertices[index].z = Z;
-
-            // For the textures: I don't know if you want to texture the terrain with one big texture, 
-            // or more textures blended together, for example a simple grass pattern, or grass blended to snow with increasing height.
-            // The first one is pretty easy :  You use one big texture over the whole map. Then the texture coord for one vertex is:
-            // lets say your terrain's width is X and its height is Z.
-            // 
-            // tex_coords[index].x = (X + 1) * 0.5f;
-            // tex_coords[index].y = (Z + 1) * 0.5f;
-
-            // If your texture is a simple grass tile, 
-            // or anything that you want to cover the whole terrain with,
-            // then texture coord of a vertex is:
-            tex_coords[index].x = grass.getSize().x * X;
-            tex_coords[index].y = grass.getSize().y * Z;
-
-            X += offsetX;
-
-            index++;
-        }
-        Z += offsetZ;
-    }
-
-    index = 0;
-
-    for (size_t y = 0; y < cell_amount; y++)
-    {
-        for (size_t x = 0; x < cell_amount; x++)
-        {
-            GLuint pos = y * vertex_amount + x;
-
-            indices[index] = pos;
-            indices[index + 1] = pos + 1;
-            indices[index + 2] = pos + vertex_amount;
-
-            indices[index + 3] = pos + 1;
-            indices[index + 4] = pos + vertex_amount;
-            indices[index + 5] = pos + vertex_amount + 1;
-
-            index += 6;
-        }
-    }
-
-    GLuint VAO, VBO[2], EBO;
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(2, VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * tex_coords.size(), tex_coords.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
-    glEnableVertexAttribArray(1);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), GL_STATIC_DRAW);
-   
-    glBindVertexArray(0);
+    Terrain terrain;
+    terrain.create(100, grass);
 
     ShaderProgram shader;
     bool a = shader.loadFromFile("resources/shaders/shader.vert", GL_VERTEX_SHADER);
@@ -172,7 +84,7 @@ int main()
     shader.use();
 
     glm::mat4 model(1.0f);
-    model = glm::scale(model, glm::vec3(10, 10, 10));
+    //model = glm::scale(model, glm::vec3(10, 10, 10));
     //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
 
     glm::mat4 projection(1);
@@ -192,18 +104,8 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.use();
-
         camera.apply(shader);
-
-        glBindVertexArray(VAO);
-        grass.bind(true);       
-
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
-        grass.bind(false);
-        glBindVertexArray(0);  
-
+        terrain.draw(shader);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -211,7 +113,7 @@ int main()
         Sleep(16);
     }
 
-
+    terrain.destroy();
     glfwTerminate();
     return 0;
 }
