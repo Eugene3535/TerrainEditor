@@ -1,8 +1,14 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "Terrain.hpp"
 
 #include <memory>
 
+
+
 Terrain::Terrain():
+    m_surface(nullptr),
     VAO(0),
     VBO{0, 0},
     EBO(0)
@@ -16,6 +22,7 @@ Terrain::~Terrain()
 
 void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
 {
+    m_map_size = { vertex_amount , vertex_amount };
     m_surface = std::addressof(texture);
 
     m_vertices.resize(vertex_amount * vertex_amount, glm::vec3());
@@ -36,6 +43,18 @@ void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
             m_tex_coords[pos].y = z;
         }
     }
+
+    for (size_t i = 0; i < 10; i++)
+    {
+        std::size_t x = rand() % m_map_size.x;
+        std::size_t y = rand() % m_map_size.y;
+        std::size_t radius = rand() % 50;
+        std::size_t height = rand() % 10;
+        
+        createHill(x, y, radius, height);
+    }
+
+    // createHill(30, 30, 20, 5);
 
     std::size_t index = 0;
     const std::size_t cell_amount = vertex_amount - 1;
@@ -98,4 +117,32 @@ void Terrain::destroy()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(2, VBO);
     glDeleteBuffers(1, &EBO);
+}
+
+bool Terrain::isCoordsInMap(std::size_t position)
+{
+    return (position > 0 && position < m_vertices.size());
+}
+
+void Terrain::createHill(std::size_t x, std::size_t z, std::size_t radius, std::size_t height)
+{
+    if (m_vertices.empty())
+        return;
+
+    for (size_t i = z - radius; i < z + radius; i++)
+    {
+        for (size_t j = x - radius; j < x + radius; j++)
+        {
+            if (std::size_t position = i * m_map_size.x + j; isCoordsInMap(position))
+            {
+                float distance = sqrtf((x - j) * (x - j) + (z - i) * (z - i));
+                
+                if (distance < radius)
+                {
+                    distance = distance / radius * M_PI_2;
+                    m_vertices[position].y += cos(distance) * height;
+                }  
+            }          
+        }
+    }
 }

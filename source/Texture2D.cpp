@@ -11,8 +11,8 @@
 #include <map>
 
 Texture2D::Texture2D() : 
-    m_handle(0), 
-    m_size()
+    m_size(),
+    m_handle(0)
 {
 }
 
@@ -31,18 +31,18 @@ bool Texture2D::loadFromFile(const std::string& filepath)
 
     setRepeated(false);
     setSmooth(false);
- 
-    int width, height, channels;
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 
-    m_size = { width, height };
+    int channels = 0;
+    unsigned char* data = stbi_load(filepath.c_str(), &m_size.x, &m_size.y, &channels, 0);
 
-    GLenum mode = channels == 4 ? GL_RGBA : GL_RGB;
+    std::cout << sizeof(data[0]);
+
+    GLenum mode = (channels == STBI_rgb_alpha) ? GL_RGBA : GL_RGB;
 
     if (data)
     {
         bind(true);
-        glTexImage2D(GL_TEXTURE_2D, 0, mode, width, height, 0, mode, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, mode, m_size.x, m_size.y, 0, mode, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         bind(false);
 

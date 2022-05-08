@@ -23,15 +23,15 @@ void Camera::init(ShaderProgram& shader)
 {
 	shader.addUniform("view");
 
-	m_position = glm::vec3(0.0f, 3.0f, 4.0f);
+	m_position = glm::vec3(5.0f, 5.0f, 8.0f);
 	m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	m_pitch = 0;
-	m_yaw = -70.f;
+	m_yaw = 90;
 	m_lastCoords = { 1200 * 0.5f, 800 * 0.5f };
 
-	m_velocity = 2;
+	m_velocity = 7;
 	m_mouseSensitivity = 0.1f;
 }
 
@@ -79,7 +79,6 @@ void Camera::setMouseViewOrientation(float x, float y)
 void Camera::moveForward(float dt)
 {
 	m_position += m_velocity * m_cameraFront * dt;
-
 }
 
 void Camera::moveBackward(float dt)

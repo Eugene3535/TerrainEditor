@@ -25,8 +25,8 @@ const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 
 Camera camera;
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+float lastX = SCR_WIDTH * 0.5f;
+float lastY = SCR_HEIGHT * 0.5f;
 
 bool firstMouse = true;
 

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include <string>
+#include <vector>
 
 class Texture2D
 {
@@ -18,6 +19,6 @@ public:
     const glm::uvec2& getSize() const;
 
 private:
+    glm::ivec2 m_size;
     GLuint     m_handle;
-    glm::uvec2 m_size;
 };
