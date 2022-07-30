@@ -3,25 +3,9 @@ cmake_minimum_required(VERSION 3.22.1)
 set(PROJECT_NAME TerrainEditor)
 project(${PROJECT_NAME})
 
-set(HEADERS
-	source/AssetManager.hpp
-	source/ShaderProgram.hpp
-	source/stb_image.h
-	source/Texture2D.hpp
-	source/Camera.hpp
-	source/Terrain.hpp
-)
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/*.cpp ${PROJECT_SOURCE_DIR}/*.h)
 
-set(SOURCES
-	source/main.cpp
-	source/AssetManager.inl	
-	source/ShaderProgram.cpp
-	source/Texture2D.cpp
-	source/Camera.cpp
-	source/Terrain.cpp
-)
-
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
