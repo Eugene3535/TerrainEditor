@@ -59,26 +59,20 @@ void ShaderProgram::use()
 	glUseProgram(m_handle);
 }
 
-bool ShaderProgram::addUniform(const std::string& name)
-{
-	GLuint location = glGetUniformLocation(m_handle, name.c_str());
-
-	return m_uniform_locations.try_emplace(name, location).second;
-}
-
 void ShaderProgram::setUniform(const std::string& name, float value)
 {
-	glUniform1f(m_uniform_locations[name], value);
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniform1f(found->second, value);
 }
-
 void ShaderProgram::setUniform(const std::string& name, const glm::vec3& vec)
 {
-	glUniform3f(m_uniform_locations[name], vec.x, vec.y, vec.z);
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniform3f(found->second, vec.x, vec.y, vec.z);
 }
-
 void ShaderProgram::setUniform(const std::string& name, const float* matrix)
 {
-	glUniformMatrix4fv(m_uniform_locations[name], 1, GL_FALSE, matrix);
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniformMatrix4fv(found->second, 1, GL_FALSE, matrix);
 }
 
 void ShaderProgram::checkCompileErrors(GLuint handle, const std::string& type)
