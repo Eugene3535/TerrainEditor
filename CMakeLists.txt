@@ -1,15 +1,10 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.16)
 
-set(PROJECT_NAME TerrainEditor)
-project(${PROJECT_NAME})
+project(TerrainEditor)
 
-file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/*.cpp ${PROJECT_SOURCE_DIR}/*.h)
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/source/*.cpp ${PROJECT_SOURCE_DIR}/source/*.h)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -27,11 +22,14 @@ target_link_libraries(${PROJECT_NAME} glm)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
 
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_directory
 					${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources)
-					
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_directory
-					${CMAKE_SOURCE_DIR}/resources
-					${CMAKE_CURRENT_BINARY_DIR}/resources)
+		
+# Uncomment if builded by VS
+# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+# 					COMMAND ${CMAKE_COMMAND} -E copy_directory
+# 					${CMAKE_SOURCE_DIR}/resources
+# 					${CMAKE_CURRENT_BINARY_DIR}/resources)

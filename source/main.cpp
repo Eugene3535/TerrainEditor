@@ -75,8 +75,8 @@ int main()
     terrain.create(100, grass);
 
     ShaderProgram shader;
-    bool a = shader.loadFromFile("resources/shaders/shader.vert", GL_VERTEX_SHADER);
-    bool b = shader.loadFromFile("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
+    shader.compileShader("resources/shaders/shader.vert", GL_VERTEX_SHADER);
+    shader.compileShader("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
     shader.addUniform("model");
     shader.addUniform("projection");

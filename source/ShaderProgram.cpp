@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-ShaderProgram::ShaderProgram():
+ShaderProgram::ShaderProgram() noexcept:
 	m_handle(0)
 {
 	m_handle = glCreateProgram();
@@ -16,12 +16,12 @@ ShaderProgram::~ShaderProgram()
 		glDeleteProgram(m_handle);
 }
 
-bool ShaderProgram::loadFromFile(const std::string& filepath, GLenum type)
+bool ShaderProgram::compileShader(const std::string& filename, GLenum type) noexcept
 {
 	std::string source;
 	std::ifstream ifs_stream;
 
-	ifs_stream.open(filepath);
+	ifs_stream.open(filename);
 
 	if (ifs_stream.is_open())
 	{
@@ -54,36 +54,44 @@ bool ShaderProgram::loadFromFile(const std::string& filepath, GLenum type)
 	return true;
 }
 
-void ShaderProgram::use()
+bool ShaderProgram::compileShaders(const std::string& filename_vert, const std::string& filename_frag) noexcept
 {
-	glUseProgram(m_handle);
+	return compileShader(filename_vert, GL_VERTEX_SHADER) && compileShader(filename_frag, GL_FRAGMENT_SHADER);
 }
 
-bool ShaderProgram::addUniform(const std::string& name)
+bool ShaderProgram::compileShaders(const std::string& filename_vert, const std::string& filename_frag, const std::string& filename_geom) noexcept
 {
-	GLuint location = glGetUniformLocation(m_handle, name.c_str());
+	return compileShader(filename_vert, GL_VERTEX_SHADER) && compileShader(filename_frag, GL_FRAGMENT_SHADER) && compileShader(filename_geom, GL_GEOMETRY_SHADER);
+}
+
+bool ShaderProgram::addUniform(const std::string& name) noexcept
+{
+	GLint location = glGetUniformLocation(m_handle, name.c_str());
+
+	if(location == -1)
+		return false;
 
 	return m_uniform_locations.try_emplace(name, location).second;
 }
-
-void ShaderProgram::setUniform(const std::string& name, float value)
+void ShaderProgram::setUniform(const std::string& name, float value) noexcept
 {
-	glUniform1f(m_uniform_locations[name], value);
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniform1f(found->second, value);
+}
+void ShaderProgram::setUniform(const std::string& name, const glm::vec3& vec) noexcept
+{
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniform3f(found->second, vec.x, vec.y, vec.z);
+}
+void ShaderProgram::setUniform(const std::string& name, const float* matrix) noexcept
+{
+	if(auto found = m_uniform_locations.find(name); found != m_uniform_locations.end())
+		glUniformMatrix4fv(found->second, 1, GL_FALSE, matrix);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const glm::vec3& vec)
+void ShaderProgram::checkCompileErrors(GLuint handle, const std::string& type) noexcept
 {
-	glUniform3f(m_uniform_locations[name], vec.x, vec.y, vec.z);
-}
-
-void ShaderProgram::setUniform(const std::string& name, const float* matrix)
-{
-	glUniformMatrix4fv(m_uniform_locations[name], 1, GL_FALSE, matrix);
-}
-
-void ShaderProgram::checkCompileErrors(GLuint handle, const std::string& type)
-{
-	int success;
+	GLint success;
 	char infoLog[1024];
 
 	if (type != "PROGRAM")
@@ -93,7 +101,7 @@ void ShaderProgram::checkCompileErrors(GLuint handle, const std::string& type)
 		if (!success)
 		{
 			glGetShaderInfoLog(handle, 1024, NULL, infoLog);
-			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- \n";
 		}
 	}
 	else
@@ -103,7 +111,12 @@ void ShaderProgram::checkCompileErrors(GLuint handle, const std::string& type)
 		if (!success)
 		{
 			glGetProgramInfoLog(handle, 1024, NULL, infoLog);
-			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- \n";
 		}
 	}
+}
+
+void ShaderProgram::use() noexcept
+{
+	glUseProgram(m_handle);
 }

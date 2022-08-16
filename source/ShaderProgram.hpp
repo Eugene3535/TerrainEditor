@@ -9,28 +9,26 @@
 class ShaderProgram
 {
 public:
-	ShaderProgram();
+	ShaderProgram() noexcept;
 	ShaderProgram(const ShaderProgram& other) = delete;
 	ShaderProgram(const ShaderProgram&& other) = delete;
 	ShaderProgram& operator = (const ShaderProgram& other) = delete;
 	ShaderProgram& operator = (const ShaderProgram&& other) = delete;
 	~ShaderProgram();
 
-	[[nodiscard]]
-	bool loadFromFile(const std::string& path, GLenum type);
-
-	void use();
-
-	[[nodiscard]]
-	bool addUniform(const std::string& name);
-
-	void setUniform(const std::string& name, float value);
-	void setUniform(const std::string& name, const glm::vec3& vec);
-	void setUniform(const std::string& name, const float* matrix);
+	bool compileShader(const std::string& filename, GLenum type) noexcept;
+	bool compileShaders(const std::string& filename_vert, const std::string& filename_frag) noexcept;
+	bool compileShaders(const std::string& filename_vert, const std::string& filename_frag, const std::string& filename_geom) noexcept;
+	
+	bool addUniform(const std::string& name) noexcept;
+	void setUniform(const std::string& name, float value) noexcept;
+	void setUniform(const std::string& name, const glm::vec3& vec) noexcept;
+	void setUniform(const std::string& name, const float* matrix) noexcept;
+	void use() noexcept;
 
 private:
-	void checkCompileErrors(GLuint shader, const std::string& type);
+	void checkCompileErrors(GLuint shader, const std::string& type) noexcept;
 
-	GLuint                        m_handle;
-	std::map<std::string, GLuint> m_uniform_locations;
+	GLuint                       m_handle;
+	std::map<std::string, GLint> m_uniform_locations;
 };
