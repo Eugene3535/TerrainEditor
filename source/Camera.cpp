@@ -1,7 +1,6 @@
 #include "Camera.hpp"
 
 Camera::Camera():
-	m_view(1),
     m_position(),
     m_cameraFront(),
     m_cameraUp(),
@@ -19,16 +18,16 @@ Camera::~Camera()
 {
 }
 
-void Camera::init(ShaderProgram& shader)
+void Camera::init(glm::mat4& view)
 {
-	shader.addUniform("view");
+	m_view = &view;
 
 	m_position = glm::vec3(5.0f, 5.0f, 8.0f);
 	m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	m_pitch = 0;
-	m_yaw = 90;
+	m_yaw = 0;
 	m_lastCoords = { 1200 * 0.5f, 800 * 0.5f };
 
 	m_velocity = 7;
@@ -37,8 +36,11 @@ void Camera::init(ShaderProgram& shader)
 
 void Camera::apply(ShaderProgram& shader)
 {
-	m_view = glm::lookAt(m_position, m_position + m_cameraFront, m_cameraUp);
-	shader.setUniform("view", glm::value_ptr(m_view));
+	if(m_view)
+	{
+		*m_view = glm::lookAt(m_position, m_position + m_cameraFront, m_cameraUp);
+		shader.setUniform("view", glm::value_ptr(*m_view));
+	}	
 }
 
 void Camera::setMouseViewOrientation(float x, float y)
@@ -112,10 +114,5 @@ void Camera::setMouseLook(bool look)
 
 	if (m_is_firstMouseClick == false)
 		m_is_firstMouseClick = true;
-}
-
-const glm::mat4& Camera::getView() const
-{
-	return m_view;
 }
 

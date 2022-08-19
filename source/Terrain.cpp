@@ -5,8 +5,6 @@
 
 #include <memory>
 
-
-
 Terrain::Terrain():
     m_surface(nullptr),
     VAO(0),
@@ -36,7 +34,7 @@ void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
             std::size_t pos = z * vertex_amount + x;
 
             m_vertices[pos].x = x;
-            m_vertices[pos].y = (rand() % 10) * 0.05f;
+            //m_vertices[pos].y = (rand() % 10) * 0.05f;
             m_vertices[pos].z = z;
 
             m_tex_coords[pos].x = x;
@@ -51,7 +49,7 @@ void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
         std::size_t radius = rand() % 50;
         std::size_t height = rand() % 10;
         
-        createHill(x, y, radius, height);
+        //createHill(x, y, radius, height);
     }
 
     // createHill(30, 30, 20, 5);

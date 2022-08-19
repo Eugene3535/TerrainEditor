@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(TerrainEditor)
 
-file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/source/*.cpp ${PROJECT_SOURCE_DIR}/source/*.h)
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/source/*.cpp ${PROJECT_SOURCE_DIR}/source/*.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

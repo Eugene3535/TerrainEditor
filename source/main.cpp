@@ -8,6 +8,7 @@
 #include "Texture2D.hpp"
 #include "Camera.hpp"
 #include "Terrain.hpp"
+#include "Object.hpp"
 
 bool IsKeyPressed(GLFWwindow* window, const int key)
 {
@@ -40,7 +41,7 @@ int main()
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Terrain editor", NULL, NULL);
     if (window == NULL)
@@ -67,31 +68,54 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Texture2D grass;
-    bool d = grass.loadFromFile("resources/textures/field.png");
-    grass.setRepeated(true);
+    Texture2D tGrass;
+    bool d = tGrass.loadFromFile("resources/textures/field.png");
+    tGrass.setRepeated(true);
  
     Terrain terrain;
-    terrain.create(100, grass);
+    terrain.create(100, tGrass);
 
     ShaderProgram shader;
-    shader.compileShader("resources/shaders/shader.vert", GL_VERTEX_SHADER);
-    shader.compileShader("resources/shaders/shader.frag", GL_FRAGMENT_SHADER);
+    shader.compileShader("resources/shaders/terrain.vert", GL_VERTEX_SHADER);
+    shader.compileShader("resources/shaders/terrain.frag", GL_FRAGMENT_SHADER);
 
     shader.addUniform("model");
+    shader.addUniform("view");
     shader.addUniform("projection");
-    camera.init(shader);
     shader.use();
 
-    glm::mat4 model(1.0f);
+    glm::mat4 terrain_model(1.0f);
+    glm::mat4 view(1.0f);
+    glm::mat4 projection(1.0f);
+
+    camera.init(view);
+
     //model = glm::scale(model, glm::vec3(10, 10, 10));
     //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
 
-    glm::mat4 projection(1);
     projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
 
-    shader.setUniform("model", glm::value_ptr(model));
-    shader.setUniform("projection", glm::value_ptr(projection));
+    glm::mat4 terrain_matrix = projection * view * terrain_model;
+
+    //shader.setUniform("model", glm::value_ptr(model));
+    shader.setUniform("projection", glm::value_ptr(terrain_matrix));
+
+//  Objects on map
+    Texture2D tTree;
+    tTree.loadFromFile("resources/textures/tree0.png");
+
+    TestObject oTree;
+    oTree.create(&tTree);
+
+    ShaderProgram oShader;
+    oShader.compileShader("resources/shaders/object.vert", GL_VERTEX_SHADER);
+    oShader.compileShader("resources/shaders/object.frag", GL_FRAGMENT_SHADER);
+    oShader.use();
+
+    //glm::mat4 model(1.0f);
+    //model = glm::translate(model, glm::vec3(5, 0, 5));
+    oShader.addUniform("view");
+    oShader.setUniform("view", glm::value_ptr(view));
         
     while (!glfwWindowShouldClose(window))
     {      
@@ -106,6 +130,7 @@ int main()
 
         camera.apply(shader);
         terrain.draw(shader);
+        //oTree.render(oShader);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -34,6 +34,8 @@ bool Texture2D::loadFromFile(const std::string& filepath) noexcept
     setRepeated(false);
     setSmooth(false);
 
+    stbi_set_flip_vertically_on_load(true);
+
     int channels = 0;
     unsigned char* data = stbi_load(filepath.c_str(), &m_size.x, &m_size.y, &channels, 0);
 

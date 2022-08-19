@@ -18,7 +18,7 @@ public:
 	Camera& operator = (const Camera&& other) = delete;
 	~Camera();
 
-	void init(ShaderProgram& shader);
+	void init(glm::mat4& m_view);
 	void apply(ShaderProgram& shader);
 
 	void setMouseViewOrientation(float x, float y);
@@ -29,10 +29,10 @@ public:
 	void moveUp(float dt);
 	void moveDown(float dt);
 	void setMouseLook(bool toLook);
-	const glm::mat4& getView() const;
 
 private:
-	glm::mat4 m_view;
+	glm::mat4* m_view = nullptr; 
+
 	glm::vec3 m_position;
 	glm::vec3 m_cameraFront;
 	glm::vec3 m_cameraUp;
