@@ -1,8 +1,0 @@
-D:/Projects/OpenGl/TerrainEditor/build/CMakeFiles/TerrainEditor.dir
-D:/Projects/OpenGl/TerrainEditor/build/CMakeFiles/ALL_BUILD.dir
-D:/Projects/OpenGl/TerrainEditor/build/CMakeFiles/ZERO_CHECK.dir
-D:/Projects/OpenGl/TerrainEditor/build/external/glfw/CMakeFiles/ALL_BUILD.dir
-D:/Projects/OpenGl/TerrainEditor/build/external/glfw/src/CMakeFiles/glfw.dir
-D:/Projects/OpenGl/TerrainEditor/build/external/glad/CMakeFiles/glad.dir
-D:/Projects/OpenGl/TerrainEditor/build/external/glad/CMakeFiles/ALL_BUILD.dir
-D:/Projects/OpenGl/TerrainEditor/build/external/glm/CMakeFiles/ALL_BUILD.dir
