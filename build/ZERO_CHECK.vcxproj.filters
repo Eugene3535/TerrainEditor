@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Projects\OpenGl\TerrainEditor\build\CMakeFiles\267b6dae6322c4f854e6afefba23700d\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{761DC89C-015E-39C9-AA38-72372FEA0F35}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -19,7 +19,7 @@ public:
 	~Terrain();
 
 	void create(std::size_t amount /* of vertices on same side */, Texture2D& texture /* surface cover */);
-	void draw(ShaderProgram& shader);
+	void draw();
 	void destroy();
 
 private:

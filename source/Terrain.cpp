@@ -97,10 +97,8 @@ void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
     glBindVertexArray(0);
 }
 
-void Terrain::draw(ShaderProgram& shader)
+void Terrain::draw()
 {
-    shader.use();
-
     glBindVertexArray(VAO);
     m_surface->bind(true);
 

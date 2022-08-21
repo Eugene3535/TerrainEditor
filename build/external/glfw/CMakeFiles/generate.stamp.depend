@@ -1,0 +1,19 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.24/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Program Files/CMake/share/cmake-3.24/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/CheckCSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/CheckFunctionExists.c
+C:/Program Files/CMake/share/cmake-3.24/Modules/CheckIncludeFile.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/CheckLibraryExists.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/FindThreads.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/Internal/CheckSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/WriteBasicConfigVersionFile.cmake
+D:/Projects/OpenGl/TerrainEditor/build/CMakeFiles/cmake.verify_globs
+D:/Projects/OpenGl/TerrainEditor/external/glfw/CMake/modules/FindVulkan.cmake
+D:/Projects/OpenGl/TerrainEditor/external/glfw/CMakeLists.txt
+D:/Projects/OpenGl/TerrainEditor/external/glfw/src/glfw3.pc.in
+D:/Projects/OpenGl/TerrainEditor/external/glfw/src/glfw3Config.cmake.in
+D:/Projects/OpenGl/TerrainEditor/external/glfw/src/glfw_config.h.in

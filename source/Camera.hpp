@@ -19,7 +19,7 @@ public:
 	~Camera();
 
 	void init(glm::mat4& m_view);
-	void apply(ShaderProgram& shader);
+	void update();
 
 	void setMouseViewOrientation(float x, float y);
 	void moveForward(float dt);

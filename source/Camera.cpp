@@ -34,13 +34,10 @@ void Camera::init(glm::mat4& view)
 	m_mouseSensitivity = 0.1f;
 }
 
-void Camera::apply(ShaderProgram& shader)
+void Camera::update()
 {
-	if(m_view)
-	{
-		*m_view = glm::lookAt(m_position, m_position + m_cameraFront, m_cameraUp);
-		shader.setUniform("view", glm::value_ptr(*m_view));
-	}	
+	if(m_view)	
+		*m_view = glm::lookAt(m_position, m_position + m_cameraFront, m_cameraUp);	
 }
 
 void Camera::setMouseViewOrientation(float x, float y)

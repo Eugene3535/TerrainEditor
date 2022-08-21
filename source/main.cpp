@@ -67,6 +67,8 @@ int main()
     }    
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Texture2D tGrass;
     bool d = tGrass.loadFromFile("resources/textures/field.png");
@@ -84,20 +86,20 @@ int main()
     shader.addUniform("projection");
     shader.use();
 
+    // Matrices
+
     glm::mat4 terrain_model(1.0f);
     glm::mat4 view(1.0f);
     glm::mat4 projection(1.0f);
+
+    projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
 
     camera.init(view);
 
     //model = glm::scale(model, glm::vec3(10, 10, 10));
     //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
 
-    projection = glm::perspective(glm::radians(70.0f), 1200.f / 800.f, 0.001f, 100.0f);
-
     glm::mat4 terrain_matrix = projection * view * terrain_model;
-
-    //shader.setUniform("model", glm::value_ptr(model));
     shader.setUniform("projection", glm::value_ptr(terrain_matrix));
 
 //  Objects on map
@@ -112,10 +114,17 @@ int main()
     oShader.compileShader("resources/shaders/object.frag", GL_FRAGMENT_SHADER);
     oShader.use();
 
-    //glm::mat4 model(1.0f);
-    //model = glm::translate(model, glm::vec3(5, 0, 5));
+    glm::mat4 object_model(1.0f);
+    object_model = glm::translate(object_model, glm::vec3(5, 0, 5));
+    object_model = glm::scale(object_model, glm::vec3(10, 10, 10));
+
+    oShader.addUniform("model");
     oShader.addUniform("view");
-    oShader.setUniform("view", glm::value_ptr(view));
+    oShader.addUniform("projection");
+    oShader.use();
+
+    oShader.setUniform("model", glm::value_ptr(object_model));
+    oShader.setUniform("projection", glm::value_ptr(terrain_matrix));
         
     while (!glfwWindowShouldClose(window))
     {      
@@ -128,9 +137,15 @@ int main()
         glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera.apply(shader);
-        terrain.draw(shader);
-        //oTree.render(oShader);
+        camera.update();
+
+        shader.use();      
+        shader.setUniform("view", glm::value_ptr(view));
+        terrain.draw();
+
+        oShader.use();
+        oShader.setUniform("view", glm::value_ptr(view));
+        oTree.draw();
         
         glfwSwapBuffers(window);
         glfwPollEvents();

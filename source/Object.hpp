@@ -16,7 +16,7 @@ public:
     ~TestObject();
 
     bool create(Texture2D* texture);
-    void render(ShaderProgram& shader);
+    void draw();
 
 private:
     float  m_vertices[20]{};

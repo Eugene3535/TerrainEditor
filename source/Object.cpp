@@ -50,10 +50,8 @@ bool TestObject::create(Texture2D* texture)
     return true;
 }
 
-void TestObject::render(ShaderProgram& shader)
+void TestObject::draw()
 {
-    shader.use();
-
     glBindVertexArray(VAO);
     m_texture->bind(true);
 
