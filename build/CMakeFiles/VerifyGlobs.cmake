@@ -10,6 +10,7 @@ set(OLD_GLOB
   "D:/Projects/OpenGl/TerrainEditor/source/ShaderProgram.cpp"
   "D:/Projects/OpenGl/TerrainEditor/source/Terrain.cpp"
   "D:/Projects/OpenGl/TerrainEditor/source/Texture2D.cpp"
+  "D:/Projects/OpenGl/TerrainEditor/source/Transform.cpp"
   "D:/Projects/OpenGl/TerrainEditor/source/main.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
@@ -26,6 +27,7 @@ set(OLD_GLOB
   "D:/Projects/OpenGl/TerrainEditor/source/ShaderProgram.hpp"
   "D:/Projects/OpenGl/TerrainEditor/source/Terrain.hpp"
   "D:/Projects/OpenGl/TerrainEditor/source/Texture2D.hpp"
+  "D:/Projects/OpenGl/TerrainEditor/source/Transform.hpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
