@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "Terrain.hpp"
 #include "Object.hpp"
+#include "Transform.hpp"
 
 bool IsKeyPressed(GLFWwindow* window, const int key)
 {
@@ -96,9 +97,6 @@ int main()
 
     camera.init(view);
 
-    //model = glm::scale(model, glm::vec3(10, 10, 10));
-    //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 0, 1));
-
     glm::mat4 terrain_matrix = projection * view * terrain_model;
     shader.setUniform("projection", glm::value_ptr(terrain_matrix));
 
@@ -114,16 +112,15 @@ int main()
     oShader.compileShader("resources/shaders/object.frag", GL_FRAGMENT_SHADER);
     oShader.use();
 
-    glm::mat4 object_model(1.0f);
-    object_model = glm::translate(object_model, glm::vec3(5, 0, 5));
-    object_model = glm::scale(object_model, glm::vec3(10, 10, 10));
+    Transform object_model;
+    object_model.translate(glm::vec3(10, 0, 10))->rotate(90.0f, glm::vec3(0, 1, 0))->scale(glm::vec3(10, 10, 0));
 
     oShader.addUniform("model");
     oShader.addUniform("view");
     oShader.addUniform("projection");
     oShader.use();
 
-    oShader.setUniform("model", glm::value_ptr(object_model));
+    oShader.setUniform("model", object_model.getMatrix());
     oShader.setUniform("projection", glm::value_ptr(terrain_matrix));
         
     while (!glfwWindowShouldClose(window))
@@ -144,6 +141,7 @@ int main()
         terrain.draw();
 
         oShader.use();
+
         oShader.setUniform("view", glm::value_ptr(view));
         oTree.draw();
         

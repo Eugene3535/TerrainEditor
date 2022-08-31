@@ -37,14 +37,12 @@ bool Texture2D::loadFromFile(const std::string& filepath) noexcept
     stbi_set_flip_vertically_on_load(true);
 
     int channels = 0;
-    unsigned char* data = stbi_load(filepath.c_str(), &m_size.x, &m_size.y, &channels, 0);
-
-    GLenum mode = (channels == STBI_rgb_alpha) ? GL_RGBA : GL_RGB;
+    unsigned char* data = stbi_load(filepath.c_str(), &m_size.x, &m_size.y, &channels, STBI_rgb_alpha);
 
     if (data)
     {
         bind(true);
-        glTexImage2D(GL_TEXTURE_2D, 0, mode, m_size.x, m_size.y, 0, mode, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         bind(false);
 

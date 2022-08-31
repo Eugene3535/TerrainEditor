@@ -20,7 +20,8 @@ public:
 
 private:
     float  m_vertices[20]{};
-    GLuint m_indices[6] = {
+    GLuint m_indices[6] = 
+    {
         0, 1, 2, 
         0, 2, 3  
     };
