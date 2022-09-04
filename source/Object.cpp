@@ -21,11 +21,11 @@ bool TestObject::create(Texture2D* texture)
 {
     m_texture = texture;
 
-//  X                      Y                      Z
-    m_vertices[0]  = 0.0f; m_vertices[1]  = 0.0f; m_vertices[2]  = 0.0f;   m_vertices[3]  = 0.0f; m_vertices[4]  = 0.0f;
-    m_vertices[5]  = 1.0f; m_vertices[6]  = 0.0f; m_vertices[7]  = 0.0f;   m_vertices[8]  = 1.0f; m_vertices[9]  = 0.0f;
-    m_vertices[10] = 1.0f; m_vertices[11] = 1.0f; m_vertices[12] = 0.0f;   m_vertices[13] = 1.0f; m_vertices[14] = 1.0f;
-    m_vertices[15] = 0.0f; m_vertices[16] = 1.0f; m_vertices[17] = 0.0f;   m_vertices[18] = 0.0f; m_vertices[19] = 1.0f;
+//  X                      Y                      Z                        U                      V
+    m_vertices[0]  = -0.5f; m_vertices[1]  = -0.5f; m_vertices[2]  = 0.0f;   m_vertices[3]  = 0.0f; m_vertices[4]  = 0.0f;
+    m_vertices[5]  =  0.5f; m_vertices[6]  = -0.5f; m_vertices[7]  = 0.0f;   m_vertices[8]  = 1.0f; m_vertices[9]  = 0.0f;
+    m_vertices[10] =  0.5f; m_vertices[11] =  0.5f; m_vertices[12] = 0.0f;   m_vertices[13] = 1.0f; m_vertices[14] = 1.0f;
+    m_vertices[15] = -0.5f; m_vertices[16] =  0.5f; m_vertices[17] = 0.0f;   m_vertices[18] = 0.0f; m_vertices[19] = 1.0f;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

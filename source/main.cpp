@@ -68,6 +68,9 @@ int main()
     }    
 
     glEnable(GL_DEPTH_TEST);
+
+
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -113,7 +116,8 @@ int main()
     oShader.use();
 
     Transform object_model;
-    object_model.translate(glm::vec3(10, 0, 10))->rotate(90.0f, glm::vec3(0, 1, 0))->scale(glm::vec3(10, 10, 0));
+    object_model.setOrigin(glm::vec3(0.5f, 0.0f, 0.5f));
+    object_model.setPosition(glm::vec3(5, 5, 5))->scale(glm::vec3(10, 10, 0));
 
     oShader.addUniform("model");
     oShader.addUniform("view");
@@ -122,6 +126,8 @@ int main()
 
     oShader.setUniform("model", object_model.getMatrix());
     oShader.setUniform("projection", glm::value_ptr(terrain_matrix));
+
+    int i = 0;
         
     while (!glfwWindowShouldClose(window))
     {      
@@ -141,8 +147,28 @@ int main()
         terrain.draw();
 
         oShader.use();
-
+    
         oShader.setUniform("view", glm::value_ptr(view));
+        
+
+        if(IsKeyPressed(window, GLFW_KEY_LEFT))
+            object_model.move(glm::vec3(0.1f, 0, 0));
+
+        if(IsKeyPressed(window, GLFW_KEY_RIGHT))
+            object_model.move(glm::vec3(-0.1f, 0, 0));
+
+        if(IsKeyPressed(window, GLFW_KEY_UP))
+            object_model.move(glm::vec3(0, 0, 0.1f));
+
+        if(IsKeyPressed(window, GLFW_KEY_DOWN))
+            object_model.move(glm::vec3(0, 0, -0.1f));
+
+        object_model.rotate(0.0f, glm::vec3(0, 1, 0));
+        oShader.setUniform("model", object_model.getMatrix());
+        oTree.draw();
+
+        object_model.rotate(90.0f, glm::vec3(0, 1, 0));
+        oShader.setUniform("model", object_model.getMatrix());
         oTree.draw();
         
         glfwSwapBuffers(window);

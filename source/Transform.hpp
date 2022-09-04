@@ -10,16 +10,20 @@ public:
 	Transform& operator = (const Transform& other);
 	Transform& operator = (const Transform&& other);
 
-    Transform* translate(const glm::vec3& point);
+    Transform* setPosition(const glm::vec3& position);
+    Transform* move(const glm::vec3& offset);
     Transform* rotate(float angle, const glm::vec3& axis);
-    Transform* scale(const glm::vec3& factors);
-    Transform* combine(const Transform& transform);
+    Transform* scale(const glm::vec3& scale);
+    Transform* setOrigin(const glm::vec3& origin);
 
-    const float* getMatrix() const;
+    const float* getMatrix();
 
 private:
-    glm::mat4 m_matrix = glm::mat4(1.0f);
+    glm::mat4 m_matrix;
+    glm::vec3 m_position;
+    glm::vec3 m_rotation_axis;
+    glm::vec3 m_scale;
+    glm::vec3 m_origin;
+    float m_angle;
 };
 
-Transform operator *(const Transform& left, const Transform& right);
-Transform& operator *=(Transform& left, const Transform& right);
