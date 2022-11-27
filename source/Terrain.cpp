@@ -95,6 +95,11 @@ void Terrain::create(std::size_t vertex_amount, Texture2D& texture)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(0);
+
+    m_count = m_indices.size();
+    m_vertices.clear();
+    m_tex_coords.clear();
+    m_indices.clear();
 }
 
 void Terrain::draw()
@@ -102,7 +107,7 @@ void Terrain::draw()
     glBindVertexArray(VAO);
     m_surface->bind(true);
 
-    glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, 0);
 
     m_surface->bind(false);
     glBindVertexArray(0);
@@ -115,7 +120,15 @@ void Terrain::destroy()
     glDeleteBuffers(1, &EBO);
 }
 
-bool Terrain::isCoordsInMap(std::size_t position)
+GLuint Terrain::getHeightInPoint(GLuint point)
+{
+    if(isCoordsInMap(point))
+        return m_vertices[point].y;
+
+    return 0;
+}
+
+bool Terrain::isCoordsInMap(GLuint position)
 {
     return (position > 0 && position < m_vertices.size());
 }

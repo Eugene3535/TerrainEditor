@@ -8,6 +8,7 @@
 #include "Texture2D.hpp"
 #include "Camera.hpp"
 #include "Terrain.hpp"
+#include "TileMap.hpp"
 #include "Object.hpp"
 #include "Transform.hpp"
 
@@ -77,9 +78,15 @@ int main()
     Texture2D tGrass;
     bool d = tGrass.loadFromFile("resources/textures/field.png");
     tGrass.setRepeated(true);
+
+    Texture2D tileset;
+    tileset.loadFromFile("resources/textures/tileset.png");
  
     Terrain terrain;
     terrain.create(100, tGrass);
+
+    TileMap tilemap;
+    tilemap.create(100, tileset, "resources/maps/data.txt");
 
     ShaderProgram shader;
     shader.compileShader("resources/shaders/terrain.vert", GL_VERTEX_SHADER);
@@ -105,7 +112,7 @@ int main()
 
 //  Objects on map
     Texture2D tTree;
-    tTree.loadFromFile("resources/textures/tree0.png");
+    tTree.loadFromFile("resources/textures/flower0.png");
 
     TestObject oTree;
     oTree.create(&tTree);
@@ -115,9 +122,10 @@ int main()
     oShader.compileShader("resources/shaders/object.frag", GL_FRAGMENT_SHADER);
     oShader.use();
 
+    
+
     Transform object_model;
-    object_model.setOrigin(glm::vec3(0.5f, 0.0f, 0.5f));
-    object_model.setPosition(glm::vec3(5, 5, 5))->scale(glm::vec3(10, 10, 0));
+    object_model.setPosition(glm::vec3(5, 0.5f, 5));
 
     oShader.addUniform("model");
     oShader.addUniform("view");
@@ -144,7 +152,8 @@ int main()
 
         shader.use();      
         shader.setUniform("view", glm::value_ptr(view));
-        terrain.draw();
+        //terrain.draw();
+        tilemap.draw();
 
         oShader.use();
     
